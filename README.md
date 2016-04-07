@@ -2,6 +2,9 @@
 
 基于 fis3 针对 jsp/velocity 模板的前端工程解决方案，定制特有的JSP前后端解决方案，同时支持组件发布到静态服务器。
 
+本模块修改于 fis3的解决方案 [fis3-jello](https://github.com/fex-team/fis3-jello "https://github.com/fex-team/fis3-jello")，有兴趣的可以看看.
+
+
 ## 特点
 
 - 定制目录结构
