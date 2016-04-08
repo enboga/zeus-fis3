@@ -24,7 +24,21 @@ var exports = module.exports = function(fis) {
     // fis.unhook('commonjs');
     // 然后再执行 fis.hook('amd');
     // 多个模块化方案插件不能共用。
+    // fis.hook('commonjs', {
+    //     // baseUrl: './src/modules',
+    //     // extList: ['.js', '.jsx']
+    // });
+
     fis.hook('commonjs');
+
+    // fis.match('::package', {
+    //     // 本项目为纯前段项目，所以用 loader 编译器加载，
+    //     // 如果用后端运行时框架，请不要使用。
+    //     postpackager: fis.plugin('loader', {
+    //         useInlineMap: true
+    //     })
+    // });
+
     fis
 
         // 对 less 文件默认支持。
@@ -34,16 +48,15 @@ var exports = module.exports = function(fis) {
         }, weight)*/
 
         // 不启用 less
-        .match('*.less', {
-            parser: null
-        }, weight)
+        // .match('*.less', {
+        //     parser: null
+        // }, weight)
 
         // 对 sass 文件默认支持。
         .match('*.{sass,scss}', {
-            parser: fis.plugin('sass', {
+            parser: fis.plugin('node-sass', {
                 include_paths: [
-                    './src/static/scss',
-                    './src/components/compass-mixins'
+                    './src/static/scss'
                 ]
             }),
             rExt: '.css'
@@ -67,43 +80,25 @@ var exports = module.exports = function(fis) {
         }, weight)
 
 
-        //设置组件
+        // ===== components =====
         .match('/src/components/(**)', {
             release: '${statics}/components/$1'
         }, weight)
 
-        //设置page
+        // 标记 components 目录下面的 js\jsx 都是模块。
+        .match('/src/components/**.{js,jsx}', {
+            isMod: true
+        }, weight)
+        // ===== end components =====
+
+
+        // ===== page =====
         .match('/src/page/(**)', {
             release: '${statics}/page/$1'
         }, weight)
 
-        //设置widget
-        .match('/src/widget/(**)', {
-            release: '${statics}/widget/$1'
-        }, weight)
-
-        // 标记 components 、 page 和 widget 、modules目录下面的 js 都是模块。
-        .match('/{src/components,src/page,src/widget,src/modules}/**.js', {
-            isMod: true
-        }, weight)
-
-        // static 下面的文件直接发布到 $statics 目录。
-        // 为了不多一层目录 static。
-        .match('/src/static/(**)', {
-            release: '${statics}/${namespace}/$1'
-        }, weight)
-
-        // test 目录原封不动发过去。
-        .match('/src/test/(**)', {
-            release: '/test/${namespace}/$1',
-            isMod: false,
-            useCompile: false
-        }, weight)
-
-        .match('/src/widget/(**).({jsp,vm,html})', {
-            id: 'widget/$1',
-            url: '/widget/$1',
-            release: '${templates}/${namespace}/widget/$1',
+        // 标记 page 目录下面的 js\jsx 都是模块。
+        .match('/src/page/**.{js,jsx}', {
             isMod: true
         }, weight)
 
@@ -117,6 +112,67 @@ var exports = module.exports = function(fis) {
             }
         }, weight)
 
+        // ===== end page =====
+
+        // ===== widget =====
+        .match('/src/widget/(**)', {
+            release: '${statics}/widget/$1'
+        }, weight)
+
+        // 标记 widget 目录下面的 js\jsx 都是模块。
+        .match('/src/widget/**.{js,jsx}', {
+            isMod: true
+        }, weight)
+
+        .match('/src/widget/(**).({jsp,vm,html})', {
+            id: 'widget/$1',
+            url: '/widget/$1',
+            release: '${templates}/${namespace}/widget/$1',
+            isMod: true
+        }, weight)
+        // ===== end widget =====
+
+        // ===== modules =====
+        .match('/src/modules/(**)', {
+            release: '${statics}/modules/$1'
+        }, weight)
+
+        // 标记 modules 目录下面的 js\jsx 都是模块。
+        .match('/src/modules/**.{js,jsx}', {
+            // id: '$1/$2',
+            // moduleId: '$1',
+            isMod: true
+        }, weight)
+        // ===== end modules =====
+
+        // static 下面的文件直接发布到 $statics 目录。
+        // 为了不多一层目录 static。
+        .match('/src/static/(**)', {
+            release: '${statics}/${namespace}/$1'
+        }, weight)
+
+        // ========== react ==========
+
+        // 编译所有后缀为 jsx 的文件为 js
+        // fis.set('project.fileType.text', 'jsx');
+        .match('{*.jsx,*:jsx,*.es,*:es}', {
+            parser: fis.plugin('babel-5.x', {
+                blacklist: ['regenerator'],
+                stage: 3,
+                sourceMaps: true
+            }),
+            rExt: '.js'
+        }, weight)
+        // ========== end react ==========
+
+        // test 目录原封不动发过去。
+        .match('/src/test/(**)', {
+            release: '/test/${namespace}/$1',
+            isMod: false,
+            useCompile: false
+        }, weight)
+
+        // ========== jsp ==========        
         .match('{map.json,${namespace}-map.json}', {
             release: '/WEB-INF/config/$0'
         }, weight)
@@ -133,6 +189,7 @@ var exports = module.exports = function(fis) {
         .match('VM_global_library.vm', {
             release: '/${templates}/VM_global_library.vm'
         }, weight)
+        // ========== end jsp ==========
 
         // _ 下划线打头的都是不希望被产出的文件。
         .match('_*.*', {
@@ -161,7 +218,7 @@ var exports = module.exports = function(fis) {
     fis
         .media('prod')
 
-        .match('*.js', {
+        .match('*.{js,jsx}', {
             optimizer: fis.plugin('uglify-js')
         }, weight)
 

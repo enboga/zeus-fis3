@@ -4,7 +4,6 @@
 
 本模块修改于 fis3的解决方案 [fis3-jello](https://github.com/fex-team/fis3-jello "https://github.com/fex-team/fis3-jello")，有兴趣的可以看看.
 
-
 ## 特点
 
 - 定制目录结构
@@ -17,17 +16,18 @@
 
 ## 使用说明
 
-### 安装 `fis3`
+### 全局安装 `fis3`
 
-```
-npm install -g fis3
-```
+	npm install -g fis3
 
-### 安装 `zeus-fis3`
+### 全局安装 `fis-parser-node-sass` 来编译sass
 
-```
-npm install -g zeus-fis3
-```
+	npm install -g fis-parser-node-sass
+
+### 全局安装 `zeus-fis3`
+
+	npm install -g zeus-fis3
+
 
 然后在 fis-conf.js 中添加以下代码即可。
 
