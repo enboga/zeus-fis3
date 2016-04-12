@@ -31,14 +31,6 @@ var exports = module.exports = function(fis) {
 
     fis.hook('commonjs');
 
-    // fis.match('::package', {
-    //     // 本项目为纯前段项目，所以用 loader 编译器加载，
-    //     // 如果用后端运行时框架，请不要使用。
-    //     postpackager: fis.plugin('loader', {
-    //         useInlineMap: true
-    //     })
-    // });
-
     fis
 
         // 对 less 文件默认支持。
@@ -213,6 +205,18 @@ var exports = module.exports = function(fis) {
                 ret.pkg[map.subpath] = map;
             }
         }, weight);
+
+
+    fis
+        .media('html')
+
+        .match('::package', {
+            // 本项目为纯前段项目，所以用 loader 编译器加载，
+            // 如果用后端运行时框架，请不要使用。
+            postpackager: fis.plugin('loader', {
+                useInlineMap: true
+            })
+        });
 
     // 在 prod 环境下，开启各种压缩和打包。
     fis
