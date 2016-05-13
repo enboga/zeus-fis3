@@ -4,6 +4,14 @@ var componentToStaticServer = require('./componentToStaticServer');
 var exports = module.exports = function(fis) {
 
     fis.set('system.localNPMFolder', path.join(__dirname, 'node_modules'));
+
+    // since fis3@3.3.21
+    // 帮当前目录的查找提前在 global 查找的前面，同时又保证 local 的查找是优先的。
+    if (fis.require.paths && fis.require.paths.length) {
+        fis.require.paths.splice(1, 0, path.join(__dirname, 'node_modules'));
+    }
+
+
     fis.require.prefixes.unshift('jello'); // 优先加载 jello 打头的插件。
 
     var weight = -100; // 此插件中，所有 match 默认的权重。

@@ -20,10 +20,6 @@
 
 	npm install -g fis3
 
-### 全局安装 `fis-parser-node-sass` 来编译sass
-
-	npm install -g fis-parser-node-sass
-
 ### 全局安装 `zeus-fis3`
 
 	npm install -g zeus-fis3
@@ -44,6 +40,13 @@ fis.require('zeus-fis3')(fis);
 
 否则请使用 `fis3 server start --type jello`。
 
+### 混合前后端方式
+如果项目中包含纯前端的html页面，编译时需要先进行默认编译再进行html别名编译
+
+	fis3 release
+	fis3 release html
+
+> **如果不是特别需要，尽量不在项目中混用后端和纯前端方式页面**
 
 ### 发布产品代码
 
@@ -52,3 +55,11 @@ fis.require('zeus-fis3')(fis);
 	fis3 release prod -d /path/of/your/j2ee/app
 
 ## 目录结构
+暂无说明
+
+## 更新日志
+
+### v0.0.4
+
+	更新同步fis3-jello@1.0.10,解决插件依赖查找出问题的BUG
+
