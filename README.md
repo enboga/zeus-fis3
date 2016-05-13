@@ -59,7 +59,10 @@ fis.require('zeus-fis3')(fis);
 
 ## 更新日志
 
+### v0.0.5
+
+	z
+
 ### v0.0.4
 
 	更新同步fis3-jello@1.0.10,解决插件依赖查找出问题的BUG
-

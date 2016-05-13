@@ -52,12 +52,13 @@ var exports = module.exports = function(fis) {
         //     parser: null
         // }, weight)
 
-        // 对 sass 文件默认支持。
+        // 对 sass 文件默认支持。默认支持生成map
         .match('*.{sass,scss}', {
             parser: fis.plugin('node-sass', {
                 include_paths: [
                     './src/static/scss'
-                ]
+                ],
+                sourceMap: true
             }),
             rExt: '.css'
         }, weight)
