@@ -1,4 +1,4 @@
-# zeus-fis3
+2016-5-13 17:18:01 # zeus-fis3
 
 基于 fis3 针对 jsp/velocity 模板的前端工程解决方案，定制特有的JSP前后端解决方案，同时支持组件发布到静态服务器。
 
@@ -61,7 +61,8 @@ fis.require('zeus-fis3')(fis);
 
 ### v0.0.5
 
-	z
+	增加 fis-parser-babel-5.x依赖，不需要再全局安装
+	增加 sass 配置，默认支持生成map
 
 ### v0.0.4
 
