@@ -20,9 +20,9 @@
 
 	npm install -g fis3
 
-### 全局安装 `zeus-fis3`
+### 项目中安装 `zeus-fis3`
 
-	npm install -g zeus-fis3
+	npm install zeus-fis3 --save
 
 
 然后在 fis-conf.js 中添加以下代码即可。
