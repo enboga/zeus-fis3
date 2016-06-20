@@ -52,10 +52,46 @@ fis.require('zeus-fis3')(fis);
 
 	fis3 release prod -d /path/of/your/j2ee/app
 
+#### 开发和发布切换
+
+当遇到开发和发布的配置参数需要不一样，可以使用 `__ZEUS_FIS3_MEDIA__` 来判断，`__ZEUS_FIS3_MEDIA__` 会根据执行的命令不一样嵌入不同的字符串。
+
+- 开发
+
+> __ZEUS_FIS3_MEDIA__ = "dev"
+
+- 发布
+
+> __ZEUS_FIS3_MEDIA__ = "prod"
+
+比如你可以这样用：
+
+	if ('__ZEUS_FIS3_MEDIA__' == 'dev') {
+	    module.exports = require('./configureStore.dev');
+	} else {
+	    module.exports = require('./configureStore.prod');
+	}
+
+执行 `fis3 release` 运行 `module.exports = require('./configureStore.dev');`
+
+执行 `fis3 release prod` 运行 `module.exports = require('./configureStore.prod');`
+
+
+
 ## 目录结构
 暂无说明
 
 ## 更新日志
+
+### v0.0.6
+
+	通过 __ZEUS_FIS3_MEDIA__ 支持开发和发布自动切换配置
+	新增支持编译ES7语法
+	所有jsx，es文件都会被执行ES6\ES7编译，/src/modules下的js,jsx都会被执行ES6\ES7编译
+	发布时文件名增加md5后缀
+	发布时 /src/modules/**.{js,jsx,es} 会执行压缩，其他文件夹下的jsx,es会被压缩
+	此版本对于发布可能有些问题，后续再优化
+	
 
 ### v0.0.5
 

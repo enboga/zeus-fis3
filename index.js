@@ -156,14 +156,50 @@ var exports = module.exports = function(fis) {
 
         // 编译所有后缀为 jsx 的文件为 js
         // fis.set('project.fileType.text', 'jsx');
-        .match('{*.jsx,*:jsx,*.es,*:es}', {
+        .match('**.{jsx,es}', {
             parser: fis.plugin('babel-5.x', {
                 blacklist: ['regenerator'],
                 stage: 3,
-                sourceMaps: true
+                sourceMaps: true,
+                optional: [
+                    "es7.asyncFunctions",
+                    "es7.classProperties",
+                    "es7.comprehensions",
+                    "es7.decorators",
+                    "es7.doExpressions",
+                    "es7.exponentiationOperator",
+                    "es7.exportExtensions",
+                    "es7.functionBind",
+                    "es7.objectRestSpread",
+                    "es7.trailingFunctionCommas"
+                ]
             }),
             rExt: '.js'
         }, weight)
+
+        .match('/src/modules/**.{js,jsx,es}', {
+            parser: fis.plugin('babel-5.x', {
+                blacklist: ['regenerator'],
+                stage: 3,
+                sourceMaps: true,
+                optional: [
+                    "es7.asyncFunctions",
+                    "es7.classProperties",
+                    "es7.comprehensions",
+                    "es7.decorators",
+                    "es7.doExpressions",
+                    "es7.exponentiationOperator",
+                    "es7.exportExtensions",
+                    "es7.functionBind",
+                    "es7.objectRestSpread",
+                    "es7.trailingFunctionCommas"
+                ]
+            }),
+            rExt: '.js'
+        }, weight)
+
+
+
         // ========== end react ==========
 
         // test 目录原封不动发过去。
@@ -213,14 +249,24 @@ var exports = module.exports = function(fis) {
                 map.setContent(JSON.stringify(ret.map, null, map.optimizer ? null : 4));
                 ret.pkg[map.subpath] = map;
             }
-        }, weight);
+        }, weight)
+
+        .match('**', {
+            deploy: [
+                fis.plugin('replace', {
+                    from: '__ZEUS_FIS3_MEDIA__',
+                    to: 'dev'
+                }),
+                fis.plugin('local-deliver') //must add a deliver, such as http-push, local-deliver
+            ]
+        });
 
 
     fis
         .media('html')
 
         .match('::package', {
-            // 本项目为纯前段项目，所以用 loader 编译器加载，
+            // 本项目为纯前端项目，所以用 loader 编译器加载，
             // 如果用后端运行时框架，请不要使用。
             postpackager: fis.plugin('loader', {
                 useInlineMap: true
@@ -231,8 +277,18 @@ var exports = module.exports = function(fis) {
     fis
         .media('prod')
 
-        .match('*.{js,jsx}', {
-            optimizer: fis.plugin('uglify-js')
+        .match('**.{jsx,es}', {
+            optimizer: fis.plugin('uglify-js',{
+                drop_console: true,
+                sourceMap: true
+            })
+        }, weight)
+
+        .match('/src/modules/**.{js,jsx,es}', {
+            optimizer: fis.plugin('uglify-js',{
+                drop_console: true,
+                sourceMap: true
+            })
         }, weight)
 
         .match('*.css', {
@@ -241,7 +297,22 @@ var exports = module.exports = function(fis) {
 
         .match('*.png', {
             optimizer: fis.plugin('png-compressor')
-        }, weight);
+        }, weight)
+
+        // 加 md5
+        .match('/src/{modules,page,static,widget}/**.{js,css,png,jsx,es}', {
+            useHash: true
+        })
+
+        .match('**', {
+            deploy: [
+                fis.plugin('replace', {
+                    from: '__ZEUS_FIS3_MEDIA__',
+                    to: 'prod'
+                }),
+                fis.plugin('local-deliver') //must add a deliver, such as http-push, local-deliver
+            ]
+        });
 
     
     // 当用户 fis-conf.js 加载后触发。
