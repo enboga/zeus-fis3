@@ -220,7 +220,7 @@ var exports = module.exports = function(fis) {
         }, weight)
 
         .match('server.conf', {
-            release: '/WEB-INF/server${namespace}.conf'
+            release: '/WEB-INF/server-${namespace}.conf'
         })
 
         .match('VM_global_library.vm', {
@@ -257,6 +257,10 @@ var exports = module.exports = function(fis) {
                     from: '__ZEUS_FIS3_MEDIA__',
                     to: 'dev'
                 }),
+                fis.plugin('replace', {
+                    from: '__ZEUS_FIS3_DOMAIN__',
+                    to: ''
+                }),
                 fis.plugin('local-deliver') //must add a deliver, such as http-push, local-deliver
             ]
         });
@@ -291,7 +295,7 @@ var exports = module.exports = function(fis) {
             })
         }, weight)
 
-        .match('*.css', {
+        .match('*.{scss, sass, less, css', {
             optimizer: fis.plugin('clean-css')
         }, weight)
 
@@ -304,28 +308,45 @@ var exports = module.exports = function(fis) {
             useHash: true
         })
 
-        .match('**', {
-            deploy: [
-                fis.plugin('replace', {
-                    from: '__ZEUS_FIS3_MEDIA__',
-                    to: 'prod'
-                }),
-                fis.plugin('local-deliver') //must add a deliver, such as http-push, local-deliver
-            ]
-        });
+        .match('/src/page/(**.{jsp,vm,html})', {
+            id: 'page/$1',
+            url: '/page/$1',
+            release: '${templates}/${contextDomain}/page/$1',
+            isMod: true,
+            extras: {
+                isPage: true
+            }
+        }, weight)
 
-    
     // 当用户 fis-conf.js 加载后触发。
     fis.on('conf:loaded', function() {
-        if (!fis.get('namespace'))return;
+        if (fis.get('namespace') && fis.get('namespace')!=""){
+            fis.match('/src/page/**.{jsp,vm,html}', {
+                url: '/${namespace}/page/$1'
+            }, weightWithNs);
 
-        fis.match('/src/page/**.{jsp,vm,html}', {
-            url: '/${namespace}/page/$1'
-        }, weightWithNs);
+            fis.match('/src/widget/**.{jsp,vm,html}', {
+                url: '/${namespace}/widget/$1'
+            }, weightWithNs);
+        };
 
-        fis.match('/src/widget/**.{jsp,vm,html}', {
-            url: '/${namespace}/widget/$1'
-        }, weightWithNs);
+        fis.media('prod')
+            .match('**', {
+                domain: fis.get('contextDomain')
+            })
+            .match('**', {
+                deploy: [
+                    fis.plugin('replace', {
+                        from: '__ZEUS_FIS3_MEDIA__',
+                        to: 'prod'
+                    }),
+                    fis.plugin('replace', {
+                        from: '__ZEUS_FIS3_DOMAIN__',
+                        to: fis.get('contextDomain')
+                    }),
+                    fis.plugin('local-deliver') //must add a deliver, such as http-push, local-deliver
+                ]
+            });
     });
 
     //设置组件 发布到 静态服务器
