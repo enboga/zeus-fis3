@@ -295,7 +295,7 @@ var exports = module.exports = function(fis) {
             })
         }, weight)
 
-        .match('*.{scss, sass, less, css', {
+        .match('*.{scss, sass, less, css}', {
             optimizer: fis.plugin('clean-css')
         }, weight)
 
